@@ -43,7 +43,7 @@ router.get("/api_old", async (req: Request, res: Response) => {
   });
 });
 
-router.post("/api/:id", (req: Request, res: Response) => {
+router.post("/api/user/:id", (req: Request, res: Response) => {
   console.log(
     req.params,
     // req.query,
@@ -54,12 +54,14 @@ router.post("/api/:id", (req: Request, res: Response) => {
     // req.ip,
     // req.xhr,
     // req.acceptsLanguages()
+    req.query
+    // req.headers
   );
-  res.send();
+  res.redirect(303, "/");
   // res.redirect(303, "/user"); // .get() need
 });
 
-router.post("/file", (req: Request, res: Response) => {
+router.post("/api/upload", (req: Request, res: Response) => {
   const form = new IncomingForm();
   form.parse(req);
   form.on("fileBegin", (name, file) => {
@@ -70,6 +72,9 @@ router.post("/file", (req: Request, res: Response) => {
         "uploads",
         `${name}.${getExtension(file.type)}`
       );
+    } else {
+      req.socket.end();
+      res.status(400).send();
     }
   });
   form.on("file", (name, file) => {
@@ -77,5 +82,9 @@ router.post("/file", (req: Request, res: Response) => {
     res.end();
   });
 });
+
+// router.get("/api/path/is/here", (req: Request, res: Response) => {
+//   res.status(200).send("Everysing is fine!");
+// });
 
 export default router;
