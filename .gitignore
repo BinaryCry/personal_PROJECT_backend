@@ -1,0 +1,4 @@
+dist
+logs/err.txt
+logs/log.txt
+node_modules
