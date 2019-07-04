@@ -6,7 +6,7 @@ import { IncomingForm } from "formidable";
 import { getExtension } from "mime";
 import { Client } from "pg";
 import { createHash } from "crypto";
-import { createReadStream } from "fs";
+import { createReadStream, fstat, unlink } from "fs";
 import uploadHandler from "./handlers/uploaded";
 
 const router = Router();
@@ -38,21 +38,27 @@ router.post("/api/upload", (req: Request, res: Response) => {
   const form = new IncomingForm();
   form.parse(req);
   form.on("fileBegin", (name, file) => {
-    if (file.type === "image/jpeg") {
+    console.log(`>>>>>>>>> ${file.type}`);
+    if (file.type.match("image")) {
       file.path = resolve(
         __dirname,
         "..",
         "uploads",
         `${name}.${getExtension(file.type)}`
       );
-    } else {
-      req.socket.end();
-      res.status(400).send();
-    }
+      res.status(201);
+    } else res.status(415);
   });
   form.on("file", (name, file) => {
-    console.log(`Uploaded: ${name}.${getExtension(file.type)}, ${file.type}`);
-    res.end();
+    if (!file.type.match("image")) {
+      unlink(file.path, (err: Error) => {
+        if (err) res.status(500).send();
+        else res.send();
+      });
+    } else {
+      console.log(`Uploaded: ${name}.${getExtension(file.type)}, ${file.type}`);
+      res.send();
+    }
   });
 });
 

@@ -1,4 +1,3 @@
-import { waterfall, AsyncResultCallback } from "async";
 import { readdir } from "fs";
 import { Request, Response } from "express";
 import { resolve } from "path";
