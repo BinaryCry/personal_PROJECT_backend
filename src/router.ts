@@ -97,4 +97,10 @@ router.get("/api_old", async (req: Request, res: Response) => {
   });
 });
 
+router.get("/api/status", (req: Request, res: Response) => {
+  let userStatus = "offline";
+  if (req.query.id && Number(req.query.id) === 1) userStatus = "online";
+  res.type("application/json").send(JSON.stringify({ userStatus }));
+});
+
 export default router;
